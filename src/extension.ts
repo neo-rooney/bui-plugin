@@ -1,26 +1,72 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+class BuiPluginViewProvider implements vscode.WebviewViewProvider {
+  public static readonly viewType = "bui-plugin-view";
+  private _view?: vscode.WebviewView;
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "bui-plugin" is now active!');
+  constructor(private readonly _extensionUri: vscode.Uri) {}
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('bui-plugin.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from bui-plugin!');
-	});
+  resolveWebviewView(
+    webviewView: vscode.WebviewView,
+    context: vscode.WebviewViewResolveContext,
+    _token: vscode.CancellationToken
+  ) {
+    this._view = webviewView;
 
-	context.subscriptions.push(disposable);
+    webviewView.webview.options = {
+      enableScripts: true,
+      localResourceRoots: [this._extensionUri],
+    };
+
+    webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+  }
+
+  private _getHtmlForWebview(webview: vscode.Webview) {
+    return `<!DOCTYPE html>
+      <html lang="ko">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>BUI Plugin</title>
+        <style>
+          body {
+            font-family: var(--vscode-font-family);
+            padding: 20px;
+            color: var(--vscode-foreground);
+          }
+          h1 {
+            color: var(--vscode-textLink-foreground);
+          }
+        </style>
+      </head>
+      <body>
+        <h1>Hello Webview!</h1>
+        <p>BUI Plugin이 정상적으로 작동하고 있습니다.</p>
+      </body>
+      </html>`;
+  }
 }
 
-// This method is called when your extension is deactivated
+export function activate(context: vscode.ExtensionContext) {
+  console.log('Congratulations, your extension "bui-plugin" is now active!');
+
+  const provider = new BuiPluginViewProvider(context.extensionUri);
+
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider(
+      BuiPluginViewProvider.viewType,
+      provider
+    )
+  );
+
+  const disposable = vscode.commands.registerCommand(
+    "bui-plugin.helloWorld",
+    () => {
+      vscode.window.showInformationMessage("Hello World from bui-plugin!");
+    }
+  );
+
+  context.subscriptions.push(disposable);
+}
+
 export function deactivate() {}
