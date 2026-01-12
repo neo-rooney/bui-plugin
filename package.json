@@ -17,7 +17,25 @@
         "command": "bui-plugin.helloWorld",
         "title": "Hello World"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "bui-plugin",
+          "title": "BUI Plugin",
+          "icon": "$(play)"
+        }
+      ]
+    },
+    "views": {
+      "bui-plugin": [
+        {
+          "id": "bui-plugin-view",
+          "name": "BUI Plugin",
+          "type": "webview"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
