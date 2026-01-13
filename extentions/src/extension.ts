@@ -50,11 +50,13 @@ class BuiPluginViewProvider implements vscode.WebviewViewProvider {
   ) {
     let scriptUri: string;
     let styleMainUri: string;
+    let vscMediaUrl: string;
 
     if (inDevelopmentMode) {
       // 개발 모드: Vite 개발 서버 사용
       scriptUri = "http://localhost:5173/src/main.tsx";
       styleMainUri = "http://localhost:5173/src/index.css";
+      vscMediaUrl = "http://localhost:5173";
     } else {
       // 프로덕션 모드: 빌드된 파일 사용
       scriptUri = webview
@@ -67,6 +69,9 @@ class BuiPluginViewProvider implements vscode.WebviewViewProvider {
           vscode.Uri.joinPath(this._extensionUri, "gui", "assets", "index.css")
         )
         .toString();
+      vscMediaUrl = webview
+        .asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "gui"))
+        .toString();
     }
 
     return `<!DOCTYPE html>
@@ -75,6 +80,7 @@ class BuiPluginViewProvider implements vscode.WebviewViewProvider {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script>const vscode = acquireVsCodeApi();</script>
+        <script>window.vscMediaUrl = "${vscMediaUrl}"</script>
         <link href="${styleMainUri}" rel="stylesheet">
         <title>BUI Plugin</title>
       </head>
@@ -92,7 +98,6 @@ class BuiPluginViewProvider implements vscode.WebviewViewProvider {
           </script>`
             : ""
         }
-        
         <script type="module" src="${scriptUri}"></script>
       </body>
     </html>`;
