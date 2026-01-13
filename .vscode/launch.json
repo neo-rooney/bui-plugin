@@ -11,7 +11,7 @@
       "request": "launch",
       "args": ["--extensionDevelopmentPath=${workspaceFolder}/extentions"],
       "outFiles": ["${workspaceFolder}/extentions/out/**/*.js"],
-      "preLaunchTask": "${defaultBuildTask}"
+      "preLaunchTask": "Start Dev Environment"
     }
   ]
 }
