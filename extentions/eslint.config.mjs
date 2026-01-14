@@ -1,27 +1,13 @@
-import typescriptEslint from "typescript-eslint";
+import baseConfig from "../../eslint.base.config.mjs";
 
-export default [{
+/**
+ * VS Code Extension용 ESLint 설정
+ * 공통 설정을 확장하여 Node.js 환경에 맞게 설정
+ */
+export default [
+  ...baseConfig,
+  {
     files: ["**/*.ts"],
-}, {
-    plugins: {
-        "@typescript-eslint": typescriptEslint.plugin,
-    },
-
-    languageOptions: {
-        parser: typescriptEslint.parser,
-        ecmaVersion: 2022,
-        sourceType: "module",
-    },
-
-    rules: {
-        "@typescript-eslint/naming-convention": ["warn", {
-            selector: "import",
-            format: ["camelCase", "PascalCase"],
-        }],
-
-        curly: "warn",
-        eqeqeq: "warn",
-        "no-throw-literal": "warn",
-        semi: "warn",
-    },
-}];
+    // Node.js 환경에 필요한 추가 설정이 있다면 여기에 추가
+  },
+];
