@@ -38,6 +38,28 @@ export class GUIWebviewViewProvider implements vscode.WebviewViewProvider {
   ) {
     this.configureWebviewOptions(webviewView.webview);
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+
+    webviewView.webview.onDidReceiveMessage(
+      (message) => {
+        switch (message.command) {
+          case "countChanged":
+            console.log(`[BUI Plugin] Count changed: ${message.value}`);
+
+            setTimeout(() => {
+              webviewView.webview.postMessage({
+                command: "countResponse",
+                value: message.value,
+                message: `Count ${message.value} received!`,
+              });
+            }, 2000);
+            break;
+          default:
+            console.log(`[BUI Plugin] Received message:`, message);
+        }
+      },
+      undefined,
+      this._extensionContext.subscriptions
+    );
   }
 
   private get isDevelopmentMode(): boolean {
@@ -72,7 +94,7 @@ export class GUIWebviewViewProvider implements vscode.WebviewViewProvider {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script>const vscode = acquireVsCodeApi();</script>
+        <script>window.vscode = acquireVsCodeApi();</script>
         <script>window.vscMediaUrl = "${resourceUris.vscMediaUrl}"</script>
         <link href="${resourceUris.styleMainUri}" rel="stylesheet">
         <title>BUI Plugin</title>
